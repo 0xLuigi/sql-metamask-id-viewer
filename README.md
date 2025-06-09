@@ -2,6 +2,12 @@
 
 A simple GUI tool for viewing and copying ID values from MetaMask SQLite databases. This tool helps users identify and manage MetaMask wallet files by comparing database IDs with wallet folder names.
 
+How to find MetaMask :fox_face: Vault Data in computer’s files:
+https://community.metamask.io/t/metamask-blank-screen-on-firefox-but-no-seed/12971/32
+
+The ID number shown by this tool is the MetaMask file identifier that the SQL database is looking for.
+What to do if numbers don't match? Copy the ID using COPY button and rename your file.
+
 ## 🚀 Quick Start
 
 ### Installation
