@@ -131,7 +131,6 @@ You can also manually browse and select specific database files using the "Brows
 - **🔄 Auto-scan** - Automatically finds MetaMask databases in current directory
 - **📋 One-click copy** - Copy IDs to clipboard instantly
 - **🎨 Clean interface** - Easy-to-read table with alternating row colors
-- **📜 Scrollable view** - Handle databases with many entries
 - **⚡ Fast loading** - Lightweight and responsive
 - **🔍 Smart detection** - Finds SQLite files even without extensions
 
