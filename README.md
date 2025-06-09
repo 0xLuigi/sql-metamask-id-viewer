@@ -1,5 +1,9 @@
 ![MetaMask ID Viewer Screenshot](images/screenshot.png)
 
+### Why?
+
+Sometimes MetaMask wallet on Firefox won't load due to incorrect file name, so I created this simple program to fix it.
+
 A simple GUI tool for viewing and copying ID values from MetaMask SQLite databases. This tool helps users identify and manage MetaMask wallet files by comparing database IDs with wallet folder names.
 
 How to find MetaMask :fox_face: Vault Data in computer’s files:
