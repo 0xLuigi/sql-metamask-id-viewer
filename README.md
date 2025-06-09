@@ -1,0 +1,197 @@
+# MetaMask ID Viewer
+
+A simple GUI tool for viewing and copying ID values from MetaMask SQLite databases. This tool helps users identify and manage MetaMask wallet files by comparing database IDs with wallet folder names.
+
+## 🚀 Quick Start
+
+### Installation
+
+#### Windows
+1. **Install Python 3.7+**
+   - Download from [python.org](https://www.python.org/downloads/)
+   - ✅ Check "Add Python to PATH" during installation
+
+2. **Download the tool**
+   ```bash
+   git clone https://github.com/yourusername/metamask-id-viewer.git
+   cd metamask-id-viewer
+   ```
+
+3. **Run the application**
+   ```bash
+   python metamask_id_viewer.py
+   ```
+
+#### macOS
+1. **Install Python 3.7+** (if not already installed)
+   ```bash
+   # Using Homebrew (recommended)
+   brew install python
+   
+   # Or download from python.org
+   ```
+
+2. **Download and run**
+   ```bash
+   git clone https://github.com/yourusername/metamask-id-viewer.git
+   cd metamask-id-viewer
+   python3 metamask_id_viewer.py
+   ```
+
+#### Linux (Ubuntu/Debian)
+1. **Install Python and tkinter**
+   ```bash
+   sudo apt update
+   sudo apt install python3 python3-tk git
+   ```
+
+2. **Download and run**
+   ```bash
+   git clone https://github.com/yourusername/metamask-id-viewer.git
+   cd metamask-id-viewer
+   python3 metamask_id_viewer.py
+   ```
+
+#### Linux (CentOS/RHEL/Fedora)
+```bash
+# CentOS/RHEL
+sudo yum install python3 python3-tkinter git
+
+# Fedora
+sudo dnf install python3 python3-tkinter git
+
+# Then run
+git clone https://github.com/yourusername/metamask-id-viewer.git
+cd metamask-id-viewer
+python3 metamask_id_viewer.py
+```
+
+---
+
+## 📋 What This Tool Does
+
+**MetaMask ID Viewer** helps you manage MetaMask wallet files by:
+
+1. **🔍 Scanning** your directory for SQLite databases with 'file' tables
+2. **📊 Displaying** ID numbers from MetaMask databases in a user-friendly interface
+3. **📋 Copying** ID values to clipboard with one click
+4. **🔗 Matching** database IDs with MetaMask folder names to identify mismatches
+
+### Why Use This Tool?
+
+When MetaMask wallet folder names don't match their internal database IDs, wallets may not start properly. This tool helps you:
+- **Identify** the correct ID for each wallet
+- **Compare** database IDs with folder names
+- **Copy** the correct ID to rename folders manually
+- **Fix** wallet startup issues
+
+---
+
+## 🖥️ How to Use
+
+### Step 1: Launch the Application
+Run the script in your MetaMask data directory or any folder containing MetaMask databases.
+
+### Step 2: Automatic Scanning
+The tool automatically scans the current directory for SQLite databases containing a 'file' table.
+
+### Step 3: View Database IDs
+- Found databases appear in the "Found databases" section
+- ID values are displayed in a scrollable list with RefCount information
+- Each ID has a green "COPY" button
+
+### Step 4: Copy and Rename
+1. **Compare** the displayed ID with your MetaMask folder name
+2. **Click "COPY"** next to the correct ID
+3. **Rename** your MetaMask folder to match the copied ID
+4. **Restart** MetaMask - your wallet should now load properly
+
+### Step 5: Manual Database Selection
+You can also manually browse and select specific database files using the "Browse" button.
+
+---
+
+## 🛠️ Features
+
+- **🔄 Auto-scan** - Automatically finds MetaMask databases in current directory
+- **📋 One-click copy** - Copy IDs to clipboard instantly
+- **🎨 Clean interface** - Easy-to-read table with alternating row colors
+- **📜 Scrollable view** - Handle databases with many entries
+- **⚡ Fast loading** - Lightweight and responsive
+- **🔍 Smart detection** - Finds SQLite files even without extensions
+
+---
+
+## 📁 File Structure
+
+```
+metamask-id-viewer/
+├── metamask_id_viewer.py    # Main application
+├── README.md               # This file
+└── images/                 # Optional icons folder
+    └── icon.ico           # Application icon (optional)
+```
+
+---
+
+## 🔧 Requirements
+
+- **Python 3.7+**
+- **tkinter** (usually included with Python)
+- **sqlite3** (included with Python)
+- No additional pip packages required!
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**"No SQLite databases with 'file' table found"**
+- Make sure you're running the tool in the correct directory
+- Verify your MetaMask databases are present
+- Try the "Browse" button to manually select a database
+
+**"'file' table not found in the database"**
+- The selected database might not be a MetaMask database
+- Look for databases in your MetaMask profile folder
+
+**Application won't start**
+- Ensure Python 3.7+ is installed
+- On Linux, make sure `python3-tk` is installed
+- Try running with `python3` instead of `python`
+
+### Finding MetaMask Databases
+
+**Windows:** 
+```
+%APPDATA%\MetaMask\Local Storage\leveldb\
+```
+
+**macOS:**
+```
+~/Library/Application Support/MetaMask/Local Storage/leveldb/
+```
+
+**Linux:**
+```
+~/.config/MetaMask/Local Storage/leveldb/
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## ⚠️ Disclaimer
+
+This tool is for educational and personal use only. Always backup your MetaMask data before making any changes. The authors are not responsible for any loss of funds or data.
