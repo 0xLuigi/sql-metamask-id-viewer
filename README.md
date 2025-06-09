@@ -1,4 +1,4 @@
-# MetaMask ID Viewer
+![MetaMask ID Viewer Screenshot](images/screenshot.png)
 
 A simple GUI tool for viewing and copying ID values from MetaMask SQLite databases. This tool helps users identify and manage MetaMask wallet files by comparing database IDs with wallet folder names.
 
@@ -7,21 +7,25 @@ A simple GUI tool for viewing and copying ID values from MetaMask SQLite databas
 ### Installation
 
 #### Windows
-1. **Install Python 3.7+**
+1. **Try the executable first** (if available)
+   - Look for `SQLite MetaMask ID Viewer.exe` in the folder
+   - Double-click to run - no installation needed!
+
+2. **If .exe doesn't work, install Python:**
    - Download from [python.org](https://www.python.org/downloads/)
    - ✅ Check "Add Python to PATH" during installation
 
-2. **Download the tool**
+3. **Download the tool**
    ```bash
-   git clone https://github.com/yourusername/metamask-id-viewer.git
-   cd metamask-id-viewer
+   git clone https://github.com/0xLuigi/sql-metamask-id-viewer.git
+   cd sql-metamask-id-viewer
    ```
 
-3. **Run the application**
+4. **Run the application**
    ```bash
    python metamask_id_viewer.py
    ```
-
+   
 #### macOS
 1. **Install Python 3.7+** (if not already installed)
    ```bash
@@ -33,7 +37,7 @@ A simple GUI tool for viewing and copying ID values from MetaMask SQLite databas
 
 2. **Download and run**
    ```bash
-   git clone https://github.com/yourusername/metamask-id-viewer.git
+   git clone https://github.com/0xLuigi/sql-metamask-id-viewer.git
    cd metamask-id-viewer
    python3 metamask_id_viewer.py
    ```
@@ -47,7 +51,7 @@ A simple GUI tool for viewing and copying ID values from MetaMask SQLite databas
 
 2. **Download and run**
    ```bash
-   git clone https://github.com/yourusername/metamask-id-viewer.git
+   git clone https://github.com/0xLuigi/sql-metamask-id-viewer.git
    cd metamask-id-viewer
    python3 metamask_id_viewer.py
    ```
@@ -61,7 +65,7 @@ sudo yum install python3 python3-tkinter git
 sudo dnf install python3 python3-tkinter git
 
 # Then run
-git clone https://github.com/yourusername/metamask-id-viewer.git
+git clone https://github.com/0xLuigi/sql-metamask-id-viewer.git
 cd metamask-id-viewer
 python3 metamask_id_viewer.py
 ```
@@ -122,18 +126,6 @@ You can also manually browse and select specific database files using the "Brows
 
 ---
 
-## 📁 File Structure
-
-```
-metamask-id-viewer/
-├── metamask_id_viewer.py    # Main application
-├── README.md               # This file
-└── images/                 # Optional icons folder
-    └── icon.ico           # Application icon (optional)
-```
-
----
-
 ## 🔧 Requirements
 
 - **Python 3.7+**
@@ -161,37 +153,13 @@ metamask-id-viewer/
 - On Linux, make sure `python3-tk` is installed
 - Try running with `python3` instead of `python`
 
-### Finding MetaMask Databases
-
-**Windows:** 
-```
-%APPDATA%\MetaMask\Local Storage\leveldb\
-```
-
-**macOS:**
-```
-~/Library/Application Support/MetaMask/Local Storage/leveldb/
-```
-
-**Linux:**
-```
-~/.config/MetaMask/Local Storage/leveldb/
-```
-
 ---
 
-## 🤝 Contributing
+## 💖 Support the Project
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+If this tool helped you fix your MetaMask wallet, consider supporting the development:
 
----
+- **Bitcoin (BTC):** `bc1qgug43r48cceja46j9nmj686wps5vad8appytsh`
+- **Ethereum (ETH):** `0x8A00f43C099bEB3F5d3C289e8b93c71c32B4d52e`
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## ⚠️ Disclaimer
-
-This tool is for educational and personal use only. Always backup your MetaMask data before making any changes. The authors are not responsible for any loss of funds or data.
+Every donation helps keep this project alive! 🙏  
