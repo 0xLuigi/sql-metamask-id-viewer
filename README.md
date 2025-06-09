@@ -21,10 +21,11 @@ A simple GUI tool for viewing and copying ID values from MetaMask SQLite databas
    cd sql-metamask-id-viewer
    ```
 
-4. **Run the application**
+4. **Run the application** (using the command console) 
    ```bash
    python metamask_id_viewer.py
    ```
+![MetaMask ID Viewer Screenshot](images/cmd.png)
    
 #### macOS
 1. **Install Python 3.7+** (if not already installed)
