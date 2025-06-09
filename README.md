@@ -162,5 +162,3 @@ If this tool helped you fix your MetaMask wallet, consider supporting the develo
 
 - **Bitcoin (BTC):** `bc1qgug43r48cceja46j9nmj686wps5vad8appytsh`
 - **Ethereum (ETH):** `0x8A00f43C099bEB3F5d3C289e8b93c71c32B4d52e`
-
-Every donation helps keep this project alive! 🙏  
