@@ -1,5 +1,8 @@
 ![MetaMask ID Viewer Screenshot](images/screenshot.png)
 
+Download link:
+https://github.com/0xLuigi/sql-metamask-id-viewer/archive/refs/heads/main.zip
+
 ### Why?
 
 Sometimes MetaMask wallet on Firefox won't load due to incorrect file name, so I created this simple program to fix it.
