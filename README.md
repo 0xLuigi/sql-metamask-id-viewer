@@ -8,7 +8,7 @@ A simple GUI tool for viewing and copying ID values from MetaMask SQLite databas
 
 ![SQLite](images/SQLite.png)
 
-You can find your :point_up: SQLite file in the same folder as the MetaMask vault data.
+You can find your ☝️ SQLite file in the same folder as the MetaMask vault data, specifically in the idb folder.
 
 How to find MetaMask :fox_face: Vault Data in computer’s files:
 https://community.metamask.io/t/metamask-blank-screen-on-firefox-but-no-seed/12971/32
