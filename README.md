@@ -6,6 +6,10 @@ Sometimes MetaMask wallet on Firefox won't load due to incorrect file name, so I
 
 A simple GUI tool for viewing and copying ID values from MetaMask SQLite databases. This tool helps users identify and manage MetaMask wallet files by comparing database IDs with wallet folder names.
 
+![SQLite](images/SQLite.png)
+
+You can find your :point_up: SQLite file in the same folder as the MetaMask vault data.
+
 How to find MetaMask :fox_face: Vault Data in computer’s files:
 https://community.metamask.io/t/metamask-blank-screen-on-firefox-but-no-seed/12971/32
 
