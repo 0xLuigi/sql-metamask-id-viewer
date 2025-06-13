@@ -9,10 +9,10 @@ This tool helps users identify and manage MetaMask wallet files by comparing dat
 
 ![SQLite](images/SQLite.png)
 
-You can find your ☝️ SQLite file in the same folder as the MetaMask vault data, specifically in the idb folder.<br>
+You can find your ☝️ SQLite file in the same folder as the MetaMask vault data, specifically in the **idb** folder.<br>
 Copy this .sqlite file and move it to the folder where you have this tool saved.
 
-How to find MetaMask :fox_face: Vault Data in computer’s files:
+How to find **MetaMask :fox_face: Vault Data** in computer’s files:<br>
 https://community.metamask.io/t/metamask-blank-screen-on-firefox-but-no-seed/12971/32
 
 The ID number shown by this tool is the MetaMask file identifier that the SQL database is looking for.
