@@ -16,8 +16,12 @@ Image for demonstration:
 
 ![Vault Data Screenshot](images/vault_data.png)
 
-My vault data file is called 873, but I see that the program shows the number 874 
+My vault data file is called 873, but I see that the program shows the number 874
+Make sure to rename the file only when the Firefox browser is completely closed.
 So I click the COPY button and rename my vault data file and then the MetaMask wallet should start normally.
+
+Prvá veta.  
+Druhá veta.
 
 ## 🚀 Quick Start
 
