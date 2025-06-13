@@ -12,6 +12,13 @@ https://community.metamask.io/t/metamask-blank-screen-on-firefox-but-no-seed/129
 The ID number shown by this tool is the MetaMask file identifier that the SQL database is looking for.
 What to do if numbers don't match? Copy the ID using COPY button and rename your Vault Data file.
 
+Image for demonstration:
+
+![Vault Data Screenshot](images/vault_data.png)
+
+My vault data file is called 873, but I see that the program shows the number 874 
+So I click the COPY button and rename my vault data file and then the MetaMask wallet should start normally.
+
 ## 🚀 Quick Start
 
 ### Installation
