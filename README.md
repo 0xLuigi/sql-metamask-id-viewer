@@ -98,7 +98,11 @@ git clone https://github.com/0xLuigi/sql-metamask-id-viewer.git
 cd metamask-id-viewer
 python3 metamask_id_viewer.py
 ```
+**This tool now includes an HTML interface!**
 
+- **Easier to use** - runs in your browser
+- **Same functionality** - all features from the desktop version
+- **Still requires Python** - needs local server to run in the folder with the HTML file
 ---
 
 ## 📋 What This Tool Does
