@@ -7,7 +7,8 @@ https://github.com/0xLuigi/sql-metamask-id-viewer/archive/refs/heads/main.zip
 
 - **Easier to use** - runs index.html in your browser
 - Only accepts .sqlite files
-- The file you are looking for is .sqlite not .sqlite-SHM or .sqlite-WAL
+- The file you are looking for is .sqlite not .sqlite-shm or .sqlite-wal
+- Below you can see an image where I’m showing my SQLite file: **3647222921wleabcEoxlt-eengsairo.sqlite**
 ---
 
 ### Why?
