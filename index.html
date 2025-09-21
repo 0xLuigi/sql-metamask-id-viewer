@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQLite MetaMask Viewer</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <meta charset="UTF-8">
+    <script src="js/sql-asm-browser.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 25%, #8B4513 50%, #D2691E 75%, #FF8C00 100%);
+            min-height: 100vh;
+            color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            min-width: 600px;
+            position: relative;
+            transition: width 0.1s ease;
+        }
+
+        .resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 15px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.3));
+            cursor: ew-resize;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .container:hover .resize-handle {
+            opacity: 1;
+            background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.5));
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+        }
+
+        .header h1 {
+            color: #FF8C00;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+            text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+        }
+
+        .header p {
+            color: #D2691E;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
+            flex-grow: 1;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+        }
+
+        .drop-zone {
+            border: 3px dashed #FF8C00;
+            border-radius: 10px;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 20px 0;
+            background: rgba(139, 69, 19, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone:hover {
+            border-color: #FFB347;
+            background: rgba(139, 69, 19, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 140, 0, 0.3);
+        }
+
+        .drop-zone.dragover {
+            border-color: #32CD32;
+            background: rgba(50, 205, 50, 0.2);
+            box-shadow: 0 0 30px rgba(50, 205, 50, 0.4);
+        }
+
+        .drop-zone.error {
+            border-color: #DC143C;
+            background: rgba(220, 20, 60, 0.2);
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.4);
+        }
+
+        .drop-zone.has-file {
+            border-color: #32CD32;
+            background: rgba(50, 205, 50, 0.1);
+            cursor: default;
+        }
+
+        .drop-zone.has-file:hover {
+            transform: none;
+            box-shadow: 0 0 20px rgba(50, 205, 50, 0.3);
+        }
+
+        .drop-zone-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone p {
+            font-size: 1.2em;
+            color: #FFB347;
+            font-weight: 500;
+        }
+
+        .file-display {
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(50, 205, 50, 0.5);
+            max-width: 100%;
+        }
+
+        .file-display.visible {
+            display: flex;
+        }
+
+        .file-icon {
+            font-size: 2em;
+            color: #32CD32;
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .file-name {
+            color: #90EE90;
+            font-weight: bold;
+            font-size: 1.1em;
+            word-break: break-all;
+        }
+
+        .remove-file-btn {
+            background: #DC143C;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .remove-file-btn:hover {
+            background: #FF1493;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.6);
+        }
+
+        .error-message {
+            background: rgba(220, 20, 60, 0.2);
+            border: 1px solid #DC143C;
+            color: #FF6B6B;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section.visible {
+            display: block;
+        }
+
+        .section h3 {
+            color: #FFB347;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+
+        .table-browser {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(139, 69, 19, 0.1) 100%);
+            border-left: 4px solid #FF8C00;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+            box-shadow: 0 0 25px rgba(255, 140, 0, 0.1);
+        }
+
+        .filename-suggester {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.15) 0%, rgba(210, 105, 30, 0.2) 100%);
+            border-left: 4px solid #FFB347;
+            border: 1px solid rgba(255, 179, 71, 0.5);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.15);
+        }
+
+        .filename-display {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+        }
+
+        .filename-label {
+            color: #D2691E;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .filename-value {
+            background: rgba(0, 0, 0, 0.6);
+            color: #FFB347;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: 2px solid rgba(255, 140, 0, 0.4);
+            word-break: break-all;
+            margin-bottom: 10px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filename-value.has-value {
+            border-color: #32CD32;
+            color: #90EE90;
+            text-shadow: 0 0 10px rgba(50, 205, 50, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(50, 205, 50, 0.2); }
+            to { box-shadow: 0 0 15px rgba(50, 205, 50, 0.4); }
+        }
+
+        .copy-btn {
+            background: linear-gradient(45deg, #32CD32, #228B22);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(50, 205, 50, 0.4);
+        }
+
+        .filename-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .filename-item {
+            background: rgba(0, 0, 0, 0.3);
+            margin: 8px 0;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border-left: 3px solid #FF8C00;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s ease;
+            color: #FFB347;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filename-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 15px rgba(255, 140, 0, 0.3);
+            background: rgba(139, 69, 19, 0.3);
+        }
+
+        .filename-item.selected {
+            border-left-color: #32CD32;
+            background: rgba(50, 205, 50, 0.1);
+            color: #90EE90;
+        }
+
+        .filename-source {
+            font-size: 0.8em;
+            color: #D2691E;
+            font-style: italic;
+        }
+
+        .database-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .db-tab {
+            background: rgba(255, 140, 0, 0.2);
+            color: #FFB347;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            font-size: 0.9em;
+        }
+
+        .db-tab:hover {
+            background: rgba(255, 140, 0, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .db-tab.active {
+            background: linear-gradient(45deg, #FF8C00, #D2691E);
+            color: #1a1a1a;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.4);
+        }
+
+        .table-content {
+            display: flex;
+            gap: 20px;
+            min-height: 400px;
+        }
+
+        .table-list {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .table-details {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .table-schema, .table-preview {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            flex: 1;
+        }
+
+        .table-list h4, .table-schema h4, .table-preview h4 {
+            color: #FFB347;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .table-item {
+            background: rgba(255, 140, 0, 0.1);
+            margin: 5px 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            color: #FFB347;
+        }
+
+        .table-item:hover {
+            background: rgba(255, 140, 0, 0.2);
+            transform: translateX(3px);
+        }
+
+        .table-item.active {
+            background: rgba(255, 140, 0, 0.3);
+            border-left-color: #FF8C00;
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+        }
+
+        .table-item.file-table {
+            background: rgba(255, 140, 0, 0.3);
+            border-left-color: #FFB347;
+            animation: highlight 2s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 140, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.6); }
+        }
+
+        .schema-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .schema-table th {
+            background: rgba(255, 140, 0, 0.3);
+            color: #1a1a1a;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .schema-table td {
+            background: rgba(0, 0, 0, 0.3);
+            color: #FFB347;
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            max-height: 300px;
+            overflow-y: auto;
+            display: block;
+        }
+
+        .preview-table thead, .preview-table tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .preview-table th {
+            background: rgba(139, 69, 19, 0.5);
+            color: white;
+            padding: 6px;
+            text-align: left;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .preview-table td {
+            background: rgba(0, 0, 0, 0.4);
+            color: #FFB347;
+            padding: 4px 6px;
+            border-bottom: 1px solid rgba(255, 140, 0, 0.1);
+            word-break: break-all;
+            max-width: 200px;
+        }
+
+        .preview-table tr:hover td {
+            background: rgba(255, 140, 0, 0.1);
+        }
+
+        .no-data {
+            color: #D2691E;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .table-content {
+                flex-direction: column;
+            }
+            
+            .table-details {
+                flex-direction: column;
+            }
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: rgba(0, 0, 0, 0.4);
+            margin: 8px 0;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border-left: 3px solid #FF8C00;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s ease;
+            color: #FFB347;
+            backdrop-filter: blur(3px);
+        }
+
+        li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 15px rgba(255, 140, 0, 0.3);
+            background: rgba(139, 69, 19, 0.3);
+        }
+
+        .status-bar {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .status-loading {
+            background: #FFB347;
+            color: #FFB347;
+        }
+
+        .status-ready {
+            background: #32CD32;
+            color: #32CD32;
+        }
+
+        .status-error {
+            background: #DC143C;
+            color: #DC143C;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .status-text {
+            font-weight: 500;
+            color: #FFB347;
+            text-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 140, 0, 0.3);
+            border-top: 2px solid #FF8C00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #FF8C00, #D2691E);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #FFB347, #FF8C00);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="resize-handle" id="resize-handle"></div>
+        <div class="header">
+            <h1>🔍 SQLite MetaMask Viewer</h1>
+            <p>Offline tool for extracting and viewing ID values from SQLite databases</p>
+        </div>
+
+        <div class="main-content">
+            <div class="drop-zone" id="drop-zone">
+                <div class="drop-zone-icon">📄</div>
+                <p>Drop SQLite database files here or click to browse files</p>
+                <input type="file" id="file-input" accept=".sqlite,.db" style="display: none;">
+                
+                <div class="file-display" id="file-display">
+                    <div class="file-info">
+                        <div class="file-name" id="file-name"></div>
+                    </div>
+                    <button class="remove-file-btn" id="remove-file-btn" title="Remove file">×</button>
+                </div>
+            </div>
+
+            <div id="error-container"></div>
+
+            <div class="section filename-suggester" id="filename-suggester">
+                <h3>📝 Database ID Extractor</h3>
+                <div class="filename-display">
+                    <div class="filename-label">Your MetaMask file should be named:</div>
+                    <div class="filename-value" id="filename-value">No ID selected</div>
+                    <button class="copy-btn" id="copy-filename" onclick="copyFilename()" style="display: none;">📋 Copy</button>
+                </div>
+                <div class="filename-list" id="filename-list"></div>
+            </div>
+
+            <div class="section table-browser" id="table-browser">
+                <h3>🗂️ Database Table Browser</h3>
+                <div class="database-tabs" id="database-tabs"></div>
+                <div class="table-content">
+                    <div class="table-list" id="table-list">
+                        <h4>📋 Tables</h4>
+                        <ul id="tables-list"></ul>
+                    </div>
+                    <div class="table-details" id="table-details">
+                        <div class="table-schema" id="table-schema">
+                            <h4>🗝️ Schema</h4>
+                            <div id="schema-content"></div>
+                        </div>
+                        <div class="table-preview" id="table-preview">
+                            <h4>👁️ Data Preview</h4>
+                            <div id="preview-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar" id="status-bar">
+            <div class="loading-spinner" id="loading-spinner"></div>
+            <div class="status-indicator status-loading" id="status-indicator"></div>
+            <span class="status-text" id="status-text">Initializing SQL.js library...</span>
+        </div>
+    </div>
+
+    <script>
+        let SQL = null;
+        let database = null;
+        let currentTable = null;
+        let selectedFilename = null;
+        let currentFileName = null;
+        
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileDisplay = document.getElementById('file-display');
+        const fileName = document.getElementById('file-name');
+        const removeFileBtn = document.getElementById('remove-file-btn');
+        const errorContainer = document.getElementById('error-container');
+        const statusBar = document.getElementById('status-bar');
+        const statusIndicator = document.getElementById('status-indicator');
+        const statusText = document.getElementById('status-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const databaseTabs = document.getElementById('database-tabs');
+        const tablesList = document.getElementById('tables-list');
+        const schemaContent = document.getElementById('schema-content');
+        const previewContent = document.getElementById('preview-content');
+        const filenameValue = document.getElementById('filename-value');
+        const filenameList = document.getElementById('filename-list');
+        const copyFilenameBtn = document.getElementById('copy-filename');
+
+        // Initialize SQL.js
+        function updateStatus(status, text, showSpinner = false) {
+            statusIndicator.className = `status-indicator status-${status}`;
+            statusText.textContent = text;
+            loadingSpinner.style.display = showSpinner ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            errorContainer.innerHTML = '';
+            errorContainer.appendChild(errorDiv);
+            
+            dropZone.classList.add('error');
+            
+            setTimeout(() => {
+                errorDiv.remove();
+                dropZone.classList.remove('error');
+            }, 5000);
+        }
+
+        function isValidSQLiteFile(file) {
+            const validExtensions = ['.sqlite', '.db'];
+            const fileName = file.name.toLowerCase();
+            return validExtensions.some(ext => fileName.endsWith(ext));
+        }
+
+        function showFileDisplay(file) {
+            fileName.textContent = file.name;
+            fileDisplay.classList.add('visible');
+            dropZone.classList.add('has-file');
+            
+            // Hide the original drop zone content
+            dropZone.querySelector('.drop-zone-icon').style.display = 'none';
+            dropZone.querySelector('p').style.display = 'none';
+        }
+
+        function hideFileDisplay() {
+            fileDisplay.classList.remove('visible');
+            dropZone.classList.remove('has-file');
+            
+            // Show the original drop zone content
+            dropZone.querySelector('.drop-zone-icon').style.display = 'block';
+            dropZone.querySelector('p').style.display = 'block';
+        }
+
+        function clearAll() {
+            database = null;
+            currentTable = null;
+            selectedFilename = null;
+            currentFileName = null;
+            errorContainer.innerHTML = '';
+            hideFileDisplay();
+            databaseTabs.innerHTML = '';
+            tablesList.innerHTML = '';
+            schemaContent.innerHTML = '';
+            previewContent.innerHTML = '';
+            filenameValue.textContent = 'No ID selected';
+            filenameValue.classList.remove('has-value');
+            filenameList.innerHTML = '';
+            copyFilenameBtn.style.display = 'none';
+            document.getElementById('table-browser').classList.remove('visible');
+            document.getElementById('filename-suggester').classList.remove('visible');
+            fileInput.value = '';
+            dropZone.classList.remove('error');
+            updateStatus('ready', '✅ SQL.js successfully loaded - tool is ready for use');
+        }
+
+        // Initialize SQL.js on load
+        updateStatus('loading', 'Loading SQL.js library...', true);
+        
+        initSqlJs().then(sqljs => {
+            SQL = sqljs;
+            updateStatus('ready', '✅ SQL.js successfully loaded - tool is ready for use');
+        }).catch(err => {
+            console.error('Error loading SQL.js:', err);
+            updateStatus('error', '❌ Error loading SQL.js library');
+        });
+
+        // Event listeners
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!dropZone.classList.contains('has-file')) {
+                dropZone.classList.add('dragover');
+            }
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (!dropZone.classList.contains('has-file')) {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            }
+        });
+
+        dropZone.addEventListener('click', () => {
+            if (!dropZone.classList.contains('has-file')) {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        removeFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearAll();
+        });
+
+        function handleFile(file) {
+            if (!SQL) {
+                updateStatus('error', '❌ SQL.js is not loaded');
+                return;
+            }
+
+            // Validate file type
+            if (!isValidSQLiteFile(file)) {
+                showError(`Unsupported file type: ${file.name}. Only .sqlite and .db files are supported.`);
+                return;
+            }
+
+            updateStatus('loading', 'Processing file...', true);
+            currentFileName = file.name;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    database = new SQL.Database(new Uint8Array(e.target.result));
+                    showFileDisplay(file);
+                    updateStatus('ready', `Successfully loaded ${file.name}`);
+                    
+                    // Automatically start analysis after successful file load
+                    analyzeDatabases();
+                } catch (err) {
+                    console.error('Error loading database:', err);
+                    showError(`Error loading database ${file.name}: Invalid SQLite file format`);
+                    updateStatus('error', 'Error loading database');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function analyzeDatabases() {
+            if (!database) {
+                showError('No database loaded. Please load a SQLite database file first.');
+                return;
+            }
+
+            updateStatus('loading', 'Analyzing database content...', true);
+            
+            const allIds = [];
+
+            try {
+                const results = database.exec("SELECT id FROM file");
+                if (results.length > 0 && results[0].values.length > 0) {
+                    results[0].values.forEach(v => {
+                        allIds.push({
+                            id: v[0],
+                            source: currentFileName
+                        });
+                    });
+                }
+            } catch (err) {
+                console.error(`Error analyzing database:`, err);
+            }
+
+            if (allIds.length > 0) {
+                // Show filename suggester
+                showFilenameSuggester(allIds);
+                updateStatus('ready', `Found ${allIds.length} ID value(s)`);
+            } else {
+                updateStatus('ready', 'No ID values found in "file" table');
+            }
+
+            // Show table browser
+            showTableBrowser();
+        }
+
+        function showFilenameSuggester(allIds) {
+            document.getElementById('filename-suggester').classList.add('visible');
+            
+            if (allIds.length === 1) {
+                // Auto-select if only one ID
+                selectFilename(allIds[0].id);
+            }
+            
+            const filenameItems = allIds.map(item => 
+                `<div class="filename-item" onclick="selectFilename('${item.id}')">
+                    <span>${item.id}</span>
+                    <span class="filename-source">from ${item.source}</span>
+                </div>`
+            ).join('');
+            
+            filenameList.innerHTML = filenameItems;
+        }
+
+        function selectFilename(id) {
+            selectedFilename = id;
+            filenameValue.textContent = id;
+            filenameValue.classList.add('has-value');
+            copyFilenameBtn.style.display = 'inline-block';
+            
+            // Update selection in list
+            document.querySelectorAll('.filename-item').forEach(item => {
+                item.classList.remove('selected');
+                if (item.textContent.includes(id)) {
+                    item.classList.add('selected');
+                }
+            });
+        }
+
+        function copyFilename() {
+            if (selectedFilename) {
+                navigator.clipboard.writeText(selectedFilename).then(() => {
+                    copyFilenameBtn.textContent = 'Copied!';
+                    copyFilenameBtn.style.background = 'linear-gradient(45deg, #32CD32, #228B22)';
+                    
+                    setTimeout(() => {
+                        copyFilenameBtn.textContent = 'Copy';
+                        copyFilenameBtn.style.background = 'linear-gradient(45deg, #32CD32, #228B22)';
+                    }, 2000);
+                }).catch(() => {
+                    copyFilenameBtn.textContent = 'Failed';
+                    setTimeout(() => {
+                        copyFilenameBtn.textContent = 'Copy';
+                    }, 2000);
+                });
+            }
+        }
+
+        function showTableBrowser() {
+            document.getElementById('table-browser').classList.add('visible');
+            updateDatabaseTabs();
+            updateTablesList();
+        }
+
+        function updateDatabaseTabs() {
+            if (currentFileName) {
+                databaseTabs.innerHTML = `<div class="db-tab active">${currentFileName}</div>`;
+            }
+        }
+
+        function updateTablesList() {
+            if (!database) return;
+            
+            try {
+                const result = database.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
+                
+                if (result.length > 0) {
+                    const tables = result[0].values.map(v => v[0]);
+                    const tableItems = tables.map(tableName => {
+                        const isFileTable = tableName === 'file';
+                        const extraClass = isFileTable ? 'file-table' : '';
+                        const icon = isFileTable ? '🎯' : '📋';
+                        return `<li class="table-item ${extraClass}" onclick="selectTable('${tableName}')" data-table="${tableName}">
+                            ${icon} ${tableName}
+                        </li>`;
+                    }).join('');
+                    
+                    tablesList.innerHTML = tableItems;
+                    
+                    // Auto-select 'file' table if exists, otherwise first table
+                    const fileTable = tables.find(t => t === 'file');
+                    const defaultTable = fileTable || tables[0];
+                    if (defaultTable) {
+                        selectTable(defaultTable);
+                    }
+                } else {
+                    tablesList.innerHTML = '<li class="no-data">No tables found</li>';
+                }
+            } catch (err) {
+                console.error('Error loading tables:', err);
+                tablesList.innerHTML = '<li class="no-data">Error loading tables</li>';
+            }
+        }
+
+        function selectTable(tableName) {
+            currentTable = tableName;
+            
+            // Update table selection appearance
+            document.querySelectorAll('.table-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.table === tableName) {
+                    item.classList.add('active');
+                }
+            });
+            
+            showTableSchema();
+            showTablePreview();
+        }
+
+        function showTableSchema() {
+            if (!currentTable || !database) return;
+            
+            try {
+                const result = database.exec(`PRAGMA table_info(${currentTable})`);
+                
+                if (result.length > 0) {
+                    const columns = result[0].values;
+                    let schemaHtml = '<table class="schema-table"><thead><tr><th>Column</th><th>Type</th><th>Not Null</th><th>Primary Key</th></tr></thead><tbody>';
+                    
+                    columns.forEach(col => {
+                        const [, name, type, notNull, , pk] = col;
+                        schemaHtml += `<tr>
+                            <td>${name}</td>
+                            <td>${type}</td>
+                            <td>${notNull ? 'Yes' : 'No'}</td>
+                            <td>${pk ? 'Yes' : 'No'}</td>
+                        </tr>`;
+                    });
+                    
+                    schemaHtml += '</tbody></table>';
+                    schemaContent.innerHTML = schemaHtml;
+                } else {
+                    schemaContent.innerHTML = '<div class="no-data">No schema information available</div>';
+                }
+            } catch (err) {
+                console.error('Error loading schema:', err);
+                schemaContent.innerHTML = '<div class="no-data">Error loading schema</div>';
+            }
+        }
+
+        function showTablePreview() {
+            if (!currentTable || !database) return;
+            
+            try {
+                const result = database.exec(`SELECT * FROM ${currentTable} LIMIT 50`);
+                
+                if (result.length > 0 && result[0].columns.length > 0) {
+                    const columns = result[0].columns;
+                    const rows = result[0].values;
+                    
+                    let previewHtml = '<table class="preview-table"><thead><tr>';
+                    columns.forEach(col => {
+                        previewHtml += `<th>${col}</th>`;
+                    });
+                    previewHtml += '</tr></thead><tbody>';
+                    
+                    rows.forEach(row => {
+                        previewHtml += '<tr>';
+                        row.forEach(cell => {
+                            const cellValue = cell === null ? 'NULL' : String(cell);
+                            const displayValue = cellValue.length > 50 ? cellValue.substring(0, 50) + '...' : cellValue;
+                            previewHtml += `<td title="${cellValue}">${displayValue}</td>`;
+                        });
+                        previewHtml += '</tr>';
+                    });
+                    
+                    previewHtml += '</tbody></table>';
+                    previewContent.innerHTML = previewHtml;
+                } else {
+                    previewContent.innerHTML = '<div class="no-data">No data available</div>';
+                }
+            } catch (err) {
+                console.error('Error loading preview:', err);
+                previewContent.innerHTML = '<div class="no-data">Error loading data preview</div>';
+            }
+        }
+
+        // Initialize resizable container
+        let isResizing = false;
+
+        const resizeHandle = document.getElementById('resize-handle');
+        const container = document.querySelector('.container');
+
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            
+            const rect = container.getBoundingClientRect();
+            const newWidth = Math.min(Math.max(e.clientX - rect.left + 20, 600), window.innerWidth - 40);
+            
+            container.style.maxWidth = newWidth + 'px';
+            container.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>
