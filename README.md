@@ -3,6 +3,12 @@
 Download link:
 https://github.com/0xLuigi/sql-metamask-id-viewer/archive/refs/heads/main.zip
 
+❗ **This tool now includes an HTML interface. The best way to run this tool 😀**
+
+- **Easier to use** - runs index.html in your browser
+- Only accepts .sqlite files
+---
+
 ### Why?
 
 Sometimes MetaMask wallet on Firefox won't load due to incorrect file name, so I created this simple program to fix it.
@@ -101,12 +107,6 @@ git clone https://github.com/0xLuigi/sql-metamask-id-viewer.git
 cd metamask-id-viewer
 python3 metamask_id_viewer.py
 ```
-❗ **This tool now includes an HTML interface!**
-
-- **Easier to use** - runs index.html in your browser
-- Only accepts .sqlite files
----
-
 ## 📋 What This Tool Does
 
 **MetaMask ID Viewer** helps you manage MetaMask wallet files by:
