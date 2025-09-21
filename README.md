@@ -45,11 +45,7 @@ So I click the COPY button and rename my vault data file. Then the MetaMask wall
 ### Installation
 
 #### Windows
-1. **Try the executable first** (if available)
-   - Look for `SQLite MetaMask ID Viewer.exe` in the folder
-   - Double-click to run - no installation needed!
-
-2. **If .exe doesn't work, install Python:**
+1. **Install Python:**
    - Download from [python.org](https://www.python.org/downloads/)
    - ✅ Check "Add Python to PATH" during installation
 
